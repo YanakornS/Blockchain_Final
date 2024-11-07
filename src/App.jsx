@@ -5,7 +5,7 @@ import contractABI from "./contractABI.json";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { FaEthereum, FaCoins } from "react-icons/fa";
-const contractAddress = "0x3953e0D73Dc3dDA2D01C5D697C6EDdDBEcd5D7C2";
+const contractAddress = "0xdC98ac0A9d4245C6B30e2807222641fdD947718b";
 
 function App() {
   const [web3, setWeb3] = useState(null);
@@ -112,46 +112,52 @@ function App() {
       console.error("Error fetching request cooldown:", error);
     }
   };
+const handleBuyTokens = async () => {
+  if (contract && account && amount) {
+    try {
+      // Show loading alert
+      Swal.fire({
+        title: "Processing...",
+        text: "Please wait while we process your transaction.",
+        icon: "info",
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
 
-  const handleBuyTokens = async () => {
-    if (contract && account && amount) {
-      try {
-        // Show loading alert
-        Swal.fire({
-          title: "Processing...",
-          text: "Please wait while we process your transaction.",
-          icon: "info",
-          allowOutsideClick: false,
-          showConfirmButton: false,
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
+      // หารจำนวนที่กรอกด้วย 100
+      const adjustedAmount = amount / 100;
 
-        const valueInWei = Web3.utils.toWei(amount, "ether");
-        await contract.methods.buy().send({ from: account, value: valueInWei });
+      // แปลง adjustedAmount เป็น Wei
+      const valueInWei = Web3.utils.toWei(adjustedAmount.toString(), "ether");
 
-        // Update balances
-        await fetchBalances(contract, account, web3);
+      // ส่งคำสั่งซื้อ
+      await contract.methods.buy().send({ from: account, value: valueInWei });
 
-        // Show success message
-        Swal.fire({
-          title: "Success!",
-          text: "You have successfully bought YAX tokens.",
-          icon: "success",
-          confirmButtonText: "OK",
-        });
-      } catch (error) {
-        // Show error message
-        Swal.fire({
-          title: "Error",
-          text: "Failed to complete the transaction. Please try again.",
-          icon: "error",
-          confirmButtonText: "OK",
-        });
-      }
+      // อัปเดตยอดเงิน
+      await fetchBalances(contract, account, web3);
+
+      // แสดงข้อความสำเร็จ
+      Swal.fire({
+        title: "Success!",
+        text: "You have successfully bought YAX tokens.",
+        icon: "success",
+        confirmButtonText: "OK",
+      });
+    } catch (error) {
+      // แสดงข้อความผิดพลาด
+      Swal.fire({
+        title: "Error",
+        text: "Failed to complete the transaction. Please try again.",
+        icon: "error",
+        confirmButtonText: "OK",
+      });
     }
-  };
+  }
+};
+
 
   const handleSellTokens = async () => {
     if (contract && account && amount) {
@@ -303,13 +309,12 @@ function App() {
         )}
         <div className="bg-gradient-to-r from-[#CB9DF0] to-[#D6A3E6] p-6 sm:p-8 lg:p-10 rounded-xl shadow-2xl w-full max-w-3xl mt-8">
           <div className="bg-white shadow-2xl rounded-lg w-full p-4">
-               <h2 className="text-2xl text-center font-semibold mb-6">Wallet Balance</h2>
+            <h2 className="text-2xl text-center font-semibold mb-6">
+              Wallet Balance
+            </h2>
             {account && (
-            
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                
                 <div className="flex justify-between items-center">
-                
                   <div className="flex items-center">
                     <FaCoins className="text-xl mr-2" />
                     <div className="text-sm font-medium text-gray-700">
@@ -317,7 +322,7 @@ function App() {
                     </div>
                   </div>
                   <div className="text-sm text-gray-800">
-                    {account ? parseFloat(userYAXBalance).toFixed(2) : "0"} YAX
+                    {account ? userYAXBalance : "0"} YAX
                   </div>
                 </div>
 
@@ -370,10 +375,15 @@ function App() {
                     -2% {/* You can replace this with dynamic data */}
                   </div>
                 </div>
+                
               </div>
             )}
+             <div className="bg-purple-100 inline-block text-sm font-semibold px-2 py-1  mt-4 border border-purple-300 rounded mb-1">
+    1 YAX = 1 ETH
+  </div>
+            <div className="mt-1 space-y-4">
+             
 
-            <div className="mt-6 space-y-4">
               <input
                 type="text"
                 value={amount}
