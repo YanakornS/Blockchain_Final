@@ -112,52 +112,51 @@ function App() {
       console.error("Error fetching request cooldown:", error);
     }
   };
-const handleBuyTokens = async () => {
-  if (contract && account && amount) {
-    try {
-      // Show loading alert
-      Swal.fire({
-        title: "Processing...",
-        text: "Please wait while we process your transaction.",
-        icon: "info",
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
+  const handleBuyTokens = async () => {
+    if (contract && account && amount) {
+      try {
+        // Show loading alert
+        Swal.fire({
+          title: "Processing...",
+          text: "Please wait while we process your transaction.",
+          icon: "info",
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
 
-      // หารจำนวนที่กรอกด้วย 100
-      const adjustedAmount = amount / 100;
+        // หารจำนวนที่กรอกด้วย 100
+        const adjustedAmount = amount / 100;
 
-      // แปลง adjustedAmount เป็น Wei
-      const valueInWei = Web3.utils.toWei(adjustedAmount.toString(), "ether");
+        // แปลง adjustedAmount เป็น Wei
+        const valueInWei = Web3.utils.toWei(adjustedAmount.toString(), "ether");
 
-      // ส่งคำสั่งซื้อ
-      await contract.methods.buy().send({ from: account, value: valueInWei });
+        // ส่งคำสั่งซื้อ
+        await contract.methods.buy().send({ from: account, value: valueInWei });
 
-      // อัปเดตยอดเงิน
-      await fetchBalances(contract, account, web3);
+        // อัปเดตยอดเงิน
+        await fetchBalances(contract, account, web3);
 
-      // แสดงข้อความสำเร็จ
-      Swal.fire({
-        title: "Success!",
-        text: "You have successfully bought YAX tokens.",
-        icon: "success",
-        confirmButtonText: "OK",
-      });
-    } catch (error) {
-      // แสดงข้อความผิดพลาด
-      Swal.fire({
-        title: "Error",
-        text: "Failed to complete the transaction. Please try again.",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
+        // แสดงข้อความสำเร็จ
+        Swal.fire({
+          title: "Success!",
+          text: "You have successfully bought YAX tokens.",
+          icon: "success",
+          confirmButtonText: "OK",
+        });
+      } catch (error) {
+        // แสดงข้อความผิดพลาด
+        Swal.fire({
+          title: "Error",
+          text: "Failed to complete the transaction. Please try again.",
+          icon: "error",
+          confirmButtonText: "OK",
+        });
+      }
     }
-  }
-};
-
+  };
 
   const handleSellTokens = async () => {
     if (contract && account && amount) {
@@ -301,7 +300,7 @@ const handleBuyTokens = async () => {
                 </div>
 
                 <div className="text-lg text-gray-800 mb-4 sm:mb-0 font-semibold">
-                  0x3953e0D73Dc3dDA2D01C5D697C6EDdDBEcd5D7C2
+                  0xdC98ac0A9d4245C6B30e2807222641fdD947718b
                 </div>
               </div>
             </div>
@@ -375,15 +374,12 @@ const handleBuyTokens = async () => {
                     -2% {/* You can replace this with dynamic data */}
                   </div>
                 </div>
-                
               </div>
             )}
-             <div className="bg-purple-100 inline-block text-sm font-semibold px-2 py-1  mt-4 border border-purple-300 rounded mb-1">
-    1 YAX = 1 ETH
-  </div>
+            <div className="bg-purple-100 inline-block text-sm font-semibold px-2 py-1  mt-4 border border-purple-300 rounded mb-1">
+              1 YAX = 4 USD$
+            </div>
             <div className="mt-1 space-y-4">
-             
-
               <input
                 type="text"
                 value={amount}
